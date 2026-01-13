@@ -1,6 +1,6 @@
 # BLACKICE ❄️
 
-**Statistically grounded regime detection for infrastructure signal analysis.**
+**A production-grade streaming pipeline that detects persistent regime shifts in infrastructure metrics using statistical validation instead of opaque ML models.**
 
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
