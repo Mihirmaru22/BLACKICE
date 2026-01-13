@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# IDE directories
+.vscode/
+.idea/
+
+# Project Specific
+# Ignore large dataset
+data/machine_usage.csv
+
+# Ignore generated reports
+reports/analysis_*.md

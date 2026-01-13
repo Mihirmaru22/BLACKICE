@@ -1,0 +1,28 @@
+# BLACKICE Configuration
+
+# Data settings
+data:
+  machine_usage_path: "../machine_usage.csv"
+  machine_meta_path: "../data/machine_meta.csv"
+  chunksize: 500000
+  target_machine_id: "m_1932"
+
+# Baseline settings
+baseline:
+  window_size: 60
+  use_ewma: false
+  ewma_alpha: 0.3
+
+# Deviation settings  
+deviation:
+  zscore_threshold: 2.0
+
+# Persistence settings
+persistence:
+  min_consecutive_points: 10
+  min_fraction_of_window: 0.3
+
+# Metrics to track
+metrics:
+  cpu: true
+  memory: true

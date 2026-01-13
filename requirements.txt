@@ -1,0 +1,5 @@
+# BLACKICE Dependencies
+pandas>=2.0.0
+pyyaml>=6.0
+matplotlib>=3.7.0
+jupyter>=1.0.0
