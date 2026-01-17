@@ -6,6 +6,8 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Status](https://img.shields.io/badge/status-stable-success)
 
+> *Note: This project is an independent signals engineering library and is not associated with BlackIce Forensics, Databricks, or other security vendors.*
+
 ---
 
 ## 1. Quick Start
