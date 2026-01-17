@@ -25,9 +25,7 @@ The system avoids "AI magic" in favor of deterministic, explainable signal proce
 BLACKICE is engineered as a streaming processing pipeline, not a batch analysis script. It operates in O(1) memory per metric tracker.
 
 ```mermaid
-%%{init: {'theme': 'neutral', 'flowchart': {'curve': 'basis'}}}%%
-
-graph LR
+graph TD
   %% 1. Define Subgraphs
   subgraph Control["Control Plane"]
     PF["Persistence Filter"]
@@ -54,13 +52,6 @@ graph LR
 
   %% 5. Feedback Loop
   SM -->|Mute| DD
-
-  %% 6. Styling
-  classDef box fill:#fff,stroke:#333,stroke-width:1px,rx:5,ry:5;
-  class SS,IP,DD,PF,SM,IR box;
-  
-  %% Force connectors to be simple
-  linkStyle default stroke:#333,stroke-width:1px,fill:none;
 ```
 
 ### Components
