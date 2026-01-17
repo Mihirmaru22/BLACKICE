@@ -25,14 +25,75 @@ The system avoids "AI magic" in favor of deterministic, explainable signal proce
 BLACKICE is engineered as a streaming processing pipeline, not a batch analysis script. It operates in O(1) memory per metric tracker.
 
 ```mermaid
-graph LR
-    Data[Stream Source] --> Pipeline[Streaming Pipeline]
-    Pipeline --> Baseline[Baseline Modeling]
-    Baseline --> Deviation[Deviation Detection]
-    Deviation --> Persistence[Persistence Filter]
-    Persistence --> State[State Machine]
-    State --> Metrics[Metrics Engine]
-    Metrics --> Report[Incident Report]
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#ffffff',
+    'primaryTextColor': '#000000',
+    'primaryBorderColor': '#000000',
+    'lineColor': '#000000',
+    'tertiaryColor': '#ffffff',
+    'fontFamily': 'Courier New, monospace',
+    'fontSize': '14px'
+  },
+  'flowchart': {
+    'curve': 'basis',
+    'htmlLabels': true
+  }
+}}%%
+
+graph TB
+    %% ---------------------------------------------------------
+    %% STYLES
+    %% ---------------------------------------------------------
+    %% 'box' style: Light grey fill, sharp black border
+    classDef box fill:#f0f0f0,stroke:#333,stroke-width:1px,color:#000;
+    %% 'transparent' style: No fill, just border (for subgraphs/containers if needed)
+    classDef container fill:#fff,stroke:#333,stroke-width:1px,stroke-dasharray: 0;
+
+    %% ---------------------------------------------------------
+    %% TOP LAYER: CONTROL PLANE
+    %% ---------------------------------------------------------
+    subgraph CP [Control Plane]
+        direction LR
+        
+        %% Nodes
+        PF[Persistence Filter]:::box
+        SM[State Machine]:::box
+        IR[Incident Report]:::box
+
+        %% Connections
+        PF -- Confirmed --> SM
+        SM -- Alert --> IR
+    end
+
+    %% ---------------------------------------------------------
+    %% BOTTOM LAYER: DATA PLANE
+    %% ---------------------------------------------------------
+    subgraph DP [Data Plane]
+        direction LR
+        
+        %% Nodes
+        SS[Stream Source]:::box
+        IP[Ingest Pipeline]:::box
+        DD[Deviation Detect]:::box
+
+        %% Connections
+        SS --> IP
+        IP -- Stats --> DD
+    end
+
+    %% ---------------------------------------------------------
+    %% CROSS-LAYER SIGNALS
+    %% ---------------------------------------------------------
+    %% The dotted line (Signal) moving up
+    DD -. Signal .-> PF
+
+    %% ---------------------------------------------------------
+    %% LINK STYLING
+    %% ---------------------------------------------------------
+    %% Force all lines to be smooth curves (basis) and black
+    linkStyle default stroke:#000,stroke-width:1px,fill:none;
 ```
 
 ### Components
