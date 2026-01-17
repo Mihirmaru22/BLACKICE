@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "blackice"
+version = "1.1.1"
+description = "Streaming Regime Detection for Infrastructure. Independent Signal Engineering Library (Not associated with BlackIce Forensics/Databricks)."
+authors = [
+  { name = "Mihir Maru", email = "mihir@example.com" },
+]
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "pandas>=2.0.0",
+    "pyyaml>=6.0",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/Mihirmaru22/BLACKICE"
+
+[project.scripts]
+blackice = "blackice.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

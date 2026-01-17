@@ -5,7 +5,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
-import math
 import yaml
 
 
@@ -16,21 +15,21 @@ def test_rolling_buffer():
     
     rb = RollingBuffer(5)
     assert rb.size == 0
-    assert rb.is_full == False
+    assert not rb.is_full
     
     for i in range(5):
         displaced = rb.push(float(i))
         assert displaced is None
     
     assert rb.size == 5
-    assert rb.is_full == True
+    assert rb.is_full
     
     displaced = rb.push(99.0)
     assert displaced == 0.0
     
     rb.clear()
     assert rb.size == 0
-    assert rb.is_full == False
+    assert not rb.is_full
     
     print("  ✓ RollingBuffer passed")
 
@@ -41,15 +40,15 @@ def test_baseline_computer():
     print("Testing BaselineComputer...")
     
     bc = BaselineComputer(window_size=10)
-    assert bc.is_warm == False
-    assert bc.is_ready == False
+    assert not bc.is_warm
+    assert not bc.is_ready
     assert bc.count == 0
     
     for i in range(10):
         bc.update(float(i))
     
-    assert bc.is_warm == True
-    assert bc.is_ready == True
+    assert bc.is_warm
+    assert bc.is_ready
     assert bc.count == 10
     
     expected_mean = 4.5
@@ -59,13 +58,13 @@ def test_baseline_computer():
     assert bc.std > 0
     
     result = bc.update(float('nan'))
-    assert result == False
+    assert not result
     
     result = bc.update(float('inf'))
-    assert result == False
+    assert not result
     
     bc.reset()
-    assert bc.is_warm == False
+    assert not bc.is_warm
     assert bc.count == 0
     
     print("  ✓ BaselineComputer passed")
@@ -84,11 +83,11 @@ def test_deviation_tracker():
         tracker.update(50.0 + (i % 2) * 0.01, timestamp=i)
     
     result = tracker.update(50.0, timestamp=10)
-    assert result.is_significant == False
+    assert not result.is_significant
     assert result.direction == DeviationDirection.NONE
     
     result = tracker.update(100.0, timestamp=11)
-    assert result.is_significant == True
+    assert result.is_significant
     assert result.direction == DeviationDirection.HIGH
     
     print("  ✓ DeviationTracker passed")

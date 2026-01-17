@@ -5,8 +5,8 @@ import time
 import pandas as pd
 
 from .baseline import BaselineComputer
-from .deviation import DeviationTracker, DeviationResult
-from .persistence import PersistenceValidator, PersistenceConfig, PersistenceResult
+from .deviation import DeviationTracker
+from .persistence import PersistenceValidator, PersistenceConfig
 from .state import RegimeStateMachine, StateTransition, StateEvent, RegimeState
 from .metrics import MetricsComputer
 
@@ -110,7 +110,7 @@ class BlackicePipeline:
             self._started = True
         
         start_time = time.time()
-        events = []
+        events: List[StateEvent] = []
         
         if df_chunk.empty:
             return events
@@ -274,7 +274,7 @@ def stream_machine_data(
     filepath: str,
     machine_id: str,
     chunksize: int = 500000,
-    columns: List[str] = None
+    columns: Optional[List[str]] = None
 ) -> Iterator[pd.DataFrame]:
     if columns is None:
         columns = ["machine_id", "timestamp", "cpu_util", "mem_util", "c5", "c6", "c7", "c8", "c9"]

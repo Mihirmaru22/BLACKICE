@@ -1,5 +1,5 @@
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from typing import List, Optional
 
@@ -96,7 +96,7 @@ class RegimeStateMachine:
                     DeviationDirection.NONE,
                     zscore,
                     f"Deviation did not persist (noise filtered), "
-                    f"returning to normal after {timestamp - self._unstable_since} time units"
+                    f"returning to normal after {timestamp - (self._unstable_since or 0)} time units"
                 )
                 self._unstable_since = None
                 
@@ -120,7 +120,7 @@ class RegimeStateMachine:
                     DeviationDirection.NONE,
                     zscore,
                     f"System returned to baseline, "
-                    f"regime lasted {timestamp - self._shifted_since} time units"
+                    f"regime lasted {timestamp - (self._shifted_since or 0)} time units"
                 )
                 self._shifted_since = None
                 

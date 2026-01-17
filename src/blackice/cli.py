@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 import argparse
 import json
@@ -6,13 +5,10 @@ import sys
 from pathlib import Path
 from typing import Optional
 import datetime
-import yaml
+import yaml  # type: ignore
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-
+# RELATIVE IMPORTS for package execution
 from blackice.pipeline import BlackicePipeline, PipelineConfig, stream_machine_data
-from blackice.state import RegimeState
-
 
 def load_config(config_path: str) -> dict:
     with open(config_path, "r") as f:
@@ -37,7 +33,7 @@ def print_metrics(metrics: dict):
     print(f"Total Duration: {metrics['total_duration']} time units")
     
     sys_metrics = metrics["systems"]
-    print(f"\n--- Systems Performance ---")
+    print("\n--- Systems Performance ---")
     print(f"  Rows Processed: {sys_metrics['rows_processed']:,}")
     print(f"  Total Time: {sys_metrics['total_time_seconds']:.2f}s")
     print(f"  Throughput: {sys_metrics['rows_per_second']:,.0f} rows/sec")
@@ -52,14 +48,14 @@ def print_metrics(metrics: dict):
             print(f"  Total Transitions: {m['transition_count']}")
             
             det = m["detection"]
-            print(f"  Detection:")
+            print("  Detection:")
             print(f"    Confirmed Shifts: {det['confirmed_shifts']}")
             print(f"    Rejected Spikes: {det['rejected_spikes']}")
             print(f"    Spike Rejection Rate: {det['spike_rejection_rate']:.1%}")
             print(f"    Avg Detection Latency: {det['detection_latency_mean']:.1f}")
             
             stab = m["stability"]
-            print(f"  Stability:")
+            print("  Stability:")
             print(f"    Total Regimes: {stab['total_regimes']}")
             print(f"    Avg Regime Duration: {stab['average_regime_duration']:.1f}")
             print(f"    Time in NORMAL: {stab['time_in_normal_pct']:.1f}%")
@@ -79,14 +75,16 @@ def generate_report(metrics: dict, config: dict, output_path: str):
     
     cpu_det = cpu.get('detection', {})
     mem_det = mem.get('detection', {})
-    cpu_stab = cpu.get('stability', {})
-    mem_stab = mem.get('stability', {})
+    
+    # cpu_stab = cpu.get('stability', {})  # Unused
+    # mem_stab = mem.get('stability', {})  # Unused
     
     total_spikes = cpu_det.get('rejected_spikes', 0) + mem_det.get('rejected_spikes', 0)
     confirmed_shifts = cpu_det.get('confirmed_shifts', 0) + mem_det.get('confirmed_shifts', 0)
     
     is_healthy = confirmed_shifts == 0
-    health_status = "HEALTHY" if is_healthy else "UNHEALTHY"
+    
+    # health_status = "HEALTHY" if is_healthy else "UNHEALTHY"  # Unused
     health_icon = "✅" if is_healthy else "❌"
     
     if is_healthy:
@@ -341,7 +339,7 @@ def run_pipeline(
     report_file: Optional[str] = None
 ):
     
-    print(f"BLACKICE Regime Detection System")
+    print("BLACKICE Regime Detection System")
     print(f"Machine: {machine_id}")
     print(f"Data: {data_path}")
     print("-" * 40)
@@ -372,7 +370,7 @@ def run_pipeline(
     
     pipeline.stop()
     
-    print(f"\\nProcessing complete!")
+    print("\\nProcessing complete!")
     print(f"  Chunks: {chunk_count}")
     print(f"  Events: {total_events}")
     
@@ -431,12 +429,15 @@ def main():
     args = parser.parse_args()
     
     config_path = Path(args.config)
+    
+    # Try current directory first, but if running installed, we might want defaults
     if not config_path.exists():
-        configs_dir = Path(__file__).parent.parent / "configs"
-        config_path = configs_dir / "default.yaml"
+         # Fallback logic could go here, for now relying on local execution or explicit paths
+         pass
     
     if not config_path.exists():
         print(f"Error: Config file not found: {args.config}")
+        print("Please provide a path to a valid config file.")
         sys.exit(1)
     
     config = load_config(str(config_path))
@@ -444,20 +445,17 @@ def main():
     data_path = args.data or config.get("data", {}).get("machine_usage_path", "machine_usage.csv")
     machine_id = args.machine or config.get("data", {}).get("target_machine_id", "m_1932")
     
-    data_file = Path(data_path)
-    if not data_file.exists():
-        # Fallback to local data directory
-        data_file = Path(__file__).parent.parent / "data" / "machine_usage.csv"
-        data_path = str(data_file)
-    
     if not Path(data_path).exists():
         print(f"Error: Data file not found: {data_path}")
+        print("Please provide a path to a valid csv data file.")
         sys.exit(1)
     
     report_file = None
-    reports_dir = Path(__file__).parent.parent / "reports"
-    reports_dir.mkdir(exist_ok=True)
-    report_file = str(reports_dir / f"analysis_{machine_id}.md")
+    if args.report:
+        # Save report to current directory reports/ by default if not specified
+        reports_dir = Path("reports")
+        reports_dir.mkdir(exist_ok=True)
+        report_file = str(reports_dir / f"analysis_{machine_id}.md")
     
     run_pipeline(
         data_path=data_path,

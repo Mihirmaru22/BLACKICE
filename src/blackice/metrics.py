@@ -1,11 +1,10 @@
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import List, Dict, Optional
 import time
 import tracemalloc
 
 from .state import StateTransition, RegimeState
-from .deviation import DeviationDirection
 
 
 @dataclass
