@@ -113,7 +113,18 @@ blackice/
 Requires Python 3.10+.
 
 ```bash
-pip install -r requirements.txt
+# Install via pip
+pip install blackice
+```
+
+---
+
+## 7. Usage
+
+Run the analysis pipeline directly from your terminal:
+
+```bash
+blackice --machine m_1932 --report
 ```
 
 ---
