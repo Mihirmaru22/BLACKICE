@@ -54,6 +54,13 @@ graph LR
 
   %% 5. Feedback Loop
   SM -->|Mute| DD
+
+  %% 6. Styling - LIGHT GREY FILL
+  classDef box fill:#f5f5f5,stroke:#333,stroke-width:1px,rx:0,ry:0;
+  class SS,IP,DD,PF,SM,IR box;
+  
+  %% Force connectors to be simple black lines
+  linkStyle default stroke:#333,stroke-width:1px,fill:none;
 ```
 
 ### Components
