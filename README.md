@@ -8,6 +8,53 @@
 
 ---
 
+## 1. Quick Start
+
+### Installation
+Requires Python 3.10+.
+
+```bash
+# Install via pip
+pip install blackice
+```
+
+### Usage (Library)
+Use `RegimeDetector` to embed stability logic directly into your Python services.
+
+```python
+from blackice import RegimeDetector, RegimeState
+
+# 1. Initialize detector (defaults: window=60, sigma=3.0)
+detector = RegimeDetector()
+
+# 2. Feed data points (e.g., from Kafka/Prometheus)
+# Returns a DetectionEvent object
+event = detector.update(45.5)
+
+# 3. Act on findings
+if event.is_anomaly:
+    print(f"Instability detected: {event.reason}")
+    print(f"Severity: {event.zscore:.2f}σ")
+    
+if event.state == RegimeState.SHIFTED:
+    # Use explicit Enums for type-safety
+    trigger_pager(f"Regime shift confirmled: {event.duration}s")
+```
+
+### Usage (CLI)
+Run the full analysis pipeline on your own data.
+
+```bash
+blackice --data <logs.csv> --machine <server_id> --report
+```
+
+**Universal Input Requirements:**
+- **Input**: A CSV file with columns `['machine_id', 'timestamp', 'cpu_util', 'mem_util']`.
+- **Output**: Generates an incident report at `reports/analysis_<server_id>.md`.
+- **Logic**: Filters noise using the persistence logic defined in `configs/default.yaml`.
+
+---
+
 ## 2. Motivation
 
 Infrastructure monitoring is plagued by **alert fatigue**. Traditional threshold-based alerting generates noise from transient spikes, while complex ML models introduce opacity and drift.
@@ -102,56 +149,7 @@ blackice/
 
 ---
 
-## 6. Installation
-
-Requires Python 3.10+.
-
-```bash
-# Install via pip
-pip install blackice
-```
-
----
-
-## 7. Usage
-
-### High-Level API (For Engineers)
-Use `RegimeDetector` to embed stability logic directly into your Python services.
-
-```python
-from blackice import RegimeDetector
-
-# 1. Initialize detector (defaults: window=60, sigma=3.0)
-detector = RegimeDetector()
-
-# 2. Feed data points (e.g., from Kafka/Prometheus)
-# Returns a DetectionEvent object
-event = detector.update(45.5)
-
-# 3. Act on findings
-if event.is_anomaly:
-    print(f"Instability detected: {event.reason}")
-    print(f"Severity: {event.zscore:.2f}σ")
-    
-if event.state == "SHIFTED":
-    trigger_pager(f"Regime shift confirmled: {event.duration}s")
-```
-
-### CLI Tool (For Ops/Audits)
-Run the full analysis pipeline on your own data.
-
-```bash
-blackice --data <logs.csv> --machine <server_id> --report
-```
-
-**Universal Input Requirements:**
-- **Input**: A CSV file with columns `['machine_id', 'timestamp', 'cpu_util', 'mem_util']`.
-- **Output**: Generates an incident report at `reports/analysis_<server_id>.md`.
-- **Logic**: Filters noise using the persistence logic defined in `configs/default.yaml`.
-
----
-
-## 8. Example Output
+## 6. Example Output
 
 BLACKICE generates structured incident reports designed for engineering transparency.
 
@@ -165,7 +163,7 @@ A "Health" verdict often accompanies high instability counts. This is **correct 
 
 ---
 
-## 9. Design Philosophy
+## 7. Design Philosophy
 
 1.  **Conservative by Design**: We prefer missing a subtle shift over waking an engineer for a false positive.
 2.  **Deterministic > Probabilistic**: Given the same input, the system must produce the exact same state transitions.
@@ -173,7 +171,7 @@ A "Health" verdict often accompanies high instability counts. This is **correct 
 
 ---
 
-## 10. System Properties
+## 8. System Properties
 
 ### Guarantees
 - **Deterministic output** for identical input streams
@@ -188,6 +186,10 @@ A "Health" verdict often accompanies high instability counts. This is **correct 
 
 ---
 
-## 11. License
+## 9. License
 
 MIT License.
+
+---
+
+> **For Contributors**: To setup a development environment and run tests, please see [DEVELOPMENT.md](DEVELOPMENT.md).
