@@ -73,32 +73,32 @@ BLACKICE is engineered as a streaming processing pipeline, not a batch analysis 
 
 ```mermaid
 graph LR
-  %% 1. Define Subgraphs
-  subgraph Control["Control Plane &nbsp; &nbsp; &nbsp;"]
-    PF["Persistence Filter"]
-    SM["State Machine"]
-    IR["Incident Report"]
-  end
+  %% Data Plane Nodes
+  SS["Stream Source"]
+  IP["Ingest Pipeline"]
+  DD["Deviation Detect"]
 
-  subgraph Data["Data Plane &nbsp; &nbsp; &nbsp;"]
-    SS["Stream Source"]
-    IP["Ingest Pipeline"]
-    DD["Deviation Detect"]
-  end
+  %% Control Plane Nodes
+  PF["Persistence Filter"]
+  SM["State Machine"]
+  IR["Incident Report"]
 
-  %% 2. Data Plane Flow
+  %% Data Flow
   SS --> IP
   IP -->|Stats| DD
-
-  %% 3. Cross-Layer Signal
   DD -.->|Signal| PF
 
-  %% 4. Control Plane Flow
+  %% Control Flow
   PF -->|Confirmed| SM
   SM -->|Alert| IR
-
-  %% 5. Feedback Loop
   SM -->|Mute| DD
+
+  %% Styling
+  classDef data fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+  classDef control fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+
+  class SS,IP,DD data;
+  class PF,SM,IR control;
 ```
 
 ### Components
