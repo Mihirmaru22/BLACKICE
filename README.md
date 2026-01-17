@@ -75,21 +75,15 @@ BLACKICE is engineered as a streaming processing pipeline, not a batch analysis 
 graph LR
   %% 1. Define Subgraphs
   subgraph Control["Control Plane"]
-    direction LR
-    PF["Persistence Filter"]
-    SM["State Machine"]
-    IR["Incident Report"]
-    %% Invisible layout fix
-    fix1["________________________"]
+    PF[Persistence Filter]
+    SM[State Machine]
+    IR[Incident Report]
   end
 
   subgraph Data["Data Plane"]
-    direction LR
-    SS["Stream Source"]
-    IP["Ingest Pipeline"]
-    DD["Deviation Detect"]
-    %% Invisible layout fix
-    fix2["________________________"]
+    SS[Stream Source]
+    IP[Ingest Pipeline]
+    DD[Deviation Detect]
   end
 
   %% 2. Data Plane Flow
@@ -105,10 +99,6 @@ graph LR
 
   %% 5. Feedback Loop
   SM -->|Mute| DD
-
-  %% Styling - Hide the fixes
-  classDef hidden fill:none,stroke:none,color:#00000000;
-  class fix1,fix2 hidden;
 ```
 
 ### Components
