@@ -68,6 +68,7 @@ graph LR
 - **Deviation Detection**: Real-time z-score computation against rolling baselines.
 - **Persistence Validation**: Deterministic filter requiring deviations to sustain magnitude and duration thresholds to trigger state changes.
 - **State Machine**: Formal transition logic (NORMAL → UNSTABLE → SHIFTED) providing clean audit trails.
+- **RegimeDetector**: High-level facade that encapsulates the entire engine into a single, easy-to-use API.
 - **Metrics/Reporting**: Generates label-free stability metrics and automated incident analysis files.
 
 ---
@@ -99,6 +100,8 @@ blackice/
 └── src/
     └── blackice/       # Core library
         ├── baseline.py     # Streaming statistics
+        ├── cli.py          # CLI entry point
+        ├── detector.py     # High-level RegimeDetector API
         ├── deviation.py    # Signal detection
         ├── metrics.py      # Stability metrics
         ├── persistence.py  # Noise filtering logic
@@ -121,28 +124,39 @@ pip install blackice
 
 ## 7. Usage
 
-Run the analysis pipeline directly from your terminal:
+### High-Level API (For Engineers)
+Use `RegimeDetector` to embed stability logic directly into your Python services.
+
+```python
+from blackice import RegimeDetector
+
+# 1. Initialize detector (defaults: window=60, sigma=3.0)
+detector = RegimeDetector()
+
+# 2. Feed data points (e.g., from Kafka/Prometheus)
+# Returns a DetectionEvent object
+event = detector.update(45.5)
+
+# 3. Act on findings
+if event.is_anomaly:
+    print(f"Instability detected: {event.reason}")
+    print(f"Severity: {event.zscore:.2f}σ")
+    
+if event.state == "SHIFTED":
+    trigger_pager(f"Regime shift confirmled: {event.duration}s")
+```
+
+### CLI Tool (For Ops/Audits)
+Run the full analysis pipeline from your terminal to generate reports.
 
 ```bash
 blackice --machine m_1932 --report
 ```
 
----
-
-## 7. Usage
-
-Run the analysis pipeline on specific machine data:
-
-```bash
-python scripts/run_blackice.py --machine m_1932 --report
-```
-
-### What happens:
-1.  The pipeline streams `machine_usage.csv` in chunks.
-2.  It builds baselines and detects deviations in real-time.
-3.  Persistence logic filters noise.
-4.  A detailed incident report is generated at `reports/analysis_m_1932.md`.
-5.  Performance metrics are printed to stdout.
+What happens:
+1.  Streams CSV data in chunks.
+2.  Filters noise using persistence logic.
+3.  Generates an incident report at `reports/analysis_m_1932.md`.
 
 ---
 
