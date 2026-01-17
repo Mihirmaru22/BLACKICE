@@ -25,20 +25,20 @@ The system avoids "AI magic" in favor of deterministic, explainable signal proce
 BLACKICE is engineered as a streaming processing pipeline, not a batch analysis script. It operates in O(1) memory per metric tracker.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#ffffff', 'primaryTextColor': '#000', 'lineColor': '#000', 'fontFamily': 'Courier New, monospace', 'fontSize': '14px'}, 'flowchart': {'curve': 'basis'}}}%%
+%%{init: {'theme': 'neutral', 'flowchart': {'curve': 'basis'}}}%%
 
 graph LR
   %% 1. Define Subgraphs
   subgraph Control["Control Plane"]
-    PF[Persistence Filter]
-    SM[State Machine]
-    IR[Incident Report]
+    PF["Persistence Filter"]
+    SM["State Machine"]
+    IR["Incident Report"]
   end
 
   subgraph Data["Data Plane"]
-    SS[Stream Source]
-    IP[Ingest Pipeline]
-    DD[Deviation Detect]
+    SS["Stream Source"]
+    IP["Ingest Pipeline"]
+    DD["Deviation Detect"]
   end
 
   %% 2. Data Plane Flow
@@ -55,11 +55,11 @@ graph LR
   %% 5. Feedback Loop
   SM -->|Mute| DD
 
-  %% 6. Styling - LIGHT GREY FILL
-  classDef box fill:#f5f5f5,stroke:#333,stroke-width:1px,rx:0,ry:0;
+  %% 6. Styling
+  classDef box fill:#fff,stroke:#333,stroke-width:1px,rx:5,ry:5;
   class SS,IP,DD,PF,SM,IR box;
   
-  %% Force connectors to be simple black lines
+  %% Force connectors to be simple
   linkStyle default stroke:#333,stroke-width:1px,fill:none;
 ```
 
@@ -182,14 +182,18 @@ A "Health" verdict often accompanies high instability counts. This is **correct 
 
 ---
 
-## 10. What This Project Demonstrates
+## 10. System Properties
 
-This repository is an artifact of **ML Systems Engineering**, distinct from Data Science.
+### Guarantees
+- **Deterministic output** for identical input streams
+- **O(1) update time** per data point
+- **Bounded memory usage** (O(window_size))
+- **No training phase** or learned parameters
 
-- **Streaming Systems Thinking**: Handling data flows rather than static tables.
-- **Infrastructure Decision Making**: Balancing sensitivity vs. specificity in operational contexts.
-- **Metrics-Driven Reasoning**: Defining success via stability metrics rather than accuracy/loss capability.
-- **Production Discipline**: Code structure, config management, and automated reporting suitable for deployment.
+### Non-Goals
+- Not a forecasting system
+- Not a root-cause analysis engine
+- Not a replacement for TSDBs or Prometheus
 
 ---
 
