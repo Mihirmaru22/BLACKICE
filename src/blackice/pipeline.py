@@ -118,26 +118,26 @@ class BlackicePipeline:
         if self._machine_id == "" and "machine_id" in df_chunk.columns:
             self._machine_id = str(df_chunk["machine_id"].iloc[0])
         
-        for _, row in df_chunk.iterrows():
-            timestamp = int(row["timestamp"])
+        for row in df_chunk.itertuples(index=False):
+            timestamp = int(row.timestamp)
             
             if self._first_timestamp is None:
                 self._first_timestamp = timestamp
             self._last_timestamp = timestamp
             
-            if "cpu" in self._trackers and "cpu_util" in row:
+            if "cpu" in self._trackers and hasattr(row, "cpu_util"):
                 event = self._process_point(
                     self._trackers["cpu"],
-                    float(row["cpu_util"]),
+                    float(row.cpu_util),
                     timestamp
                 )
                 if event:
                     events.append(event)
             
-            if "memory" in self._trackers and "mem_util" in row:
+            if "memory" in self._trackers and hasattr(row, "mem_util"):
                 event = self._process_point(
                     self._trackers["memory"],
-                    float(row["mem_util"]),
+                    float(row.mem_util),
                     timestamp
                 )
                 if event:
