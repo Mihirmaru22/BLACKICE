@@ -147,16 +147,16 @@ if event.state == "SHIFTED":
 ```
 
 ### CLI Tool (For Ops/Audits)
-Run the full analysis pipeline from your terminal to generate reports.
+Run the full analysis pipeline on your own data.
 
 ```bash
-blackice --machine m_1932 --report
+blackice --data <logs.csv> --machine <server_id> --report
 ```
 
-What happens:
-1.  Streams CSV data in chunks.
-2.  Filters noise using persistence logic.
-3.  Generates an incident report at `reports/analysis_m_1932.md`.
+**Universal Input Requirements:**
+- **Input**: A CSV file with columns `['machine_id', 'timestamp', 'cpu_util', 'mem_util']`.
+- **Output**: Generates an incident report at `reports/analysis_<server_id>.md`.
+- **Logic**: Filters noise using the persistence logic defined in `configs/default.yaml`.
 
 ---
 
