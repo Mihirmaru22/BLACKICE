@@ -41,8 +41,10 @@ def main():
     result = subprocess.run(cmd, capture_output=True, text=True, env=env)
     
     # Cleanup (comment out if debugging)
-    if data_file.exists(): data_file.unlink()
-    if output_file.exists(): output_file.unlink()
+    if data_file.exists():
+        data_file.unlink()
+    if output_file.exists():
+        output_file.unlink()
     
     # 3. Assertions
     if result.returncode != 0:
