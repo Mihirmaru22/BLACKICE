@@ -8,9 +8,9 @@ from pathlib import Path
 def create_dummy_csv(filename):
     with open(filename, 'w', newline='') as f:
         writer = csv.writer(f)
-        # machine_id, timestamp, cpu, mem
+        # machine_id, timestamp, cpu, mem, c5, c6, c7, c8, c9
         for i in range(100):
-            writer.writerow(['m_smoke', 1000+i, 50.0, 40.0])
+            writer.writerow(['m_smoke', 1000+i, 50.0, 40.0, 0, 0, 0, 0, 0])
 
 def main():
     print("Running CLI Smoke Test...")
