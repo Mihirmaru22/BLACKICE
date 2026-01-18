@@ -156,25 +156,28 @@ graph LR
 
 ```text
 blackice/
-├── configs/            # YAML configuration for pipelines
-│   └── default.yaml    # Production default thresholds
-├── data/               # Data processing artifacts
-├── notebooks/          # Analysis and visualization logic
-│   └── main.ipynb      # Interactive validation notebook
-├── reports/            # Generated incident analysis reports
-├── scripts/            # Executable entry points
-│   ├── run_blackice.py # Main pipeline CLI
-│   └── test_blackice.py# Integration test suite
-└── src/
-    └── blackice/       # Core library
-        ├── baseline.py     # Streaming statistics
-        ├── cli.py          # CLI entry point
-        ├── detector.py     # High-level RegimeDetector API
-        ├── deviation.py    # Signal detection
-        ├── metrics.py      # Stability metrics
-        ├── persistence.py  # Noise filtering logic
-        ├── pipeline.py     # Orchestration
-        └── state.py        # Regime state machine
+├── configs/            # YAML configuration (Learned & Defaults)
+├── notebooks/          # Analysis and visualization
+├── reports/            # Generated incident reports
+├── scripts/            # Testing & CI Verification
+│   ├── test_blackice.py    # Integration suite
+│   ├── test_cli_smoke.py   # Operational smoke tests
+│   └── test_determinism.py # O(1) Invariant checks
+├── src/
+│   └── blackice/       # Core library
+│       ├── learning/       # [NEW] Offline ML Module
+│       │   ├── objective.py    # Loss Function (SRE-weighted)
+│       │   └── optimizer.py    # Grid Search Trainer
+│       ├── baseline.py     # Streaming statistics
+│       ├── cli.py          # Production CLI entry point
+│       ├── detector.py     # High-level RegimeDetector API
+│       ├── deviation.py    # Signal detection
+│       ├── metrics.py      # Stability metrics
+│       ├── persistence.py  # Noise filtering logic
+│       ├── pipeline.py     # Orchestration
+│       └── state.py        # Regime state machine
+├── train_model.py      # [NEW] ML Training Entrypoint
+└── pyproject.toml      # Project Metadata & Dependencies
 ```
 
 ---
