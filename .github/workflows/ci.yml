@@ -43,8 +43,10 @@ jobs:
         
     - name: Run Systems Invariant Tests (Determinism)
       run: |
+        export PYTHONPATH=$PYTHONPATH:$(pwd)/src
         python scripts/test_determinism.py
 
     - name: Run Operational Smoke Test (CLI)
       run: |
+        export PYTHONPATH=$PYTHONPATH:$(pwd)/src
         python scripts/test_cli_smoke.py
