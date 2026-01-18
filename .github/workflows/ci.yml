@@ -40,3 +40,11 @@ jobs:
     - name: Run Tests
       run: |
         python scripts/test_blackice.py
+        
+    - name: Run Systems Invariant Tests (Determinism)
+      run: |
+        python scripts/test_determinism.py
+
+    - name: Run Operational Smoke Test (CLI)
+      run: |
+        python scripts/test_cli_smoke.py
