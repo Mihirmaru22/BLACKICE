@@ -210,7 +210,8 @@ A "Health" verdict often accompanies high instability counts. This is **correct 
 - **Deterministic output** for identical input streams
 - **O(1) update time** per data point
 - **Bounded memory usage** (O(window_size))
-- **No training phase** or learned parameters
+- **No *Online* Training** (Learning is decoupled & offline)
+- **Learned Configs, Deterministic Execution**
 
 ### Non-Goals
 - Not a forecasting system
