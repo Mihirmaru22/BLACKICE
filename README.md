@@ -57,6 +57,33 @@ blackice --data <logs.csv> --machine <server_id> --report
 
 ---
 
+## 2. Hybrid ML (Offline Training)
+
+**Optimized Parameters, Deterministic Runtime.**
+
+BLACKICE includes an Offline Learning module that optimizes configuration parameters (Decision Boundaries) using historical data. This allows the system to adapt to specific infrastructure characteristics without running opaque models in production.
+
+### Training Usage
+Use the training script to find the optimal `z_threshold` and `window_size` for your data:
+
+```bash
+# Finds best parameters using Grid Search over 48 combinations
+python train_model.py data/machine_usage.csv --output configs/learned.yaml
+```
+
+**What happens:**
+1.  **Objective Function**: Minimizes a loss function where `False_Alerts` are penalized 5x more than `Detection_Layency`.
+2.  **Optimizer**: Runs the pipeline on historical data with varying parameters (Grid Search).
+3.  **Output**: Generates a production-ready `learned.yaml` config file.
+
+Then run the detector with the learned config:
+
+```bash
+blackice --config configs/learned.yaml ...
+```
+
+---
+
 ## 2. Motivation
 
 Infrastructure monitoring is plagued by **alert fatigue**. Traditional threshold-based alerting generates noise from transient spikes, while complex ML models introduce opacity and drift.
