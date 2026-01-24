@@ -10,9 +10,13 @@ import yaml  # type: ignore
 # RELATIVE IMPORTS for package execution
 from blackice.pipeline import BlackicePipeline, PipelineConfig, stream_machine_data
 
+
 def load_config(config_path: str) -> dict:
     with open(config_path, "r") as f:
-        return yaml.safe_load(f)
+        cfg = yaml.safe_load(f)
+        # Ensure we have a dict even if yaml is empty
+        return cfg if cfg else {}
+
 
 
 def print_event(event):
@@ -76,6 +80,15 @@ def generate_report(metrics: dict, config: dict, output_path: str):
     cpu_det = cpu.get('detection', {})
     mem_det = mem.get('detection', {})
     
+    # Helper to get config values safely (handles flat vs nested)
+    def get_cfg(section, key, default=None):
+        if key in config: return config[key]
+        return config.get(section, {}).get(key, default)
+
+    min_consecutive = get_cfg('persistence', 'min_consecutive_points', 3)
+    min_fraction = get_cfg('persistence', 'min_fraction_of_window', 0.5)
+    z_threshold = get_cfg('deviation', 'zscore_threshold', 3.0)
+    
     # cpu_stab = cpu.get('stability', {})  # Unused
     # mem_stab = mem.get('stability', {})  # Unused
     
@@ -96,25 +109,25 @@ def generate_report(metrics: dict, config: dict, output_path: str):
         )
         regime_section_title = "Why No Regime Changes Were Confirmed"
         regime_section_content = f"""### 1. Persistence Requirements Not Met
-
+ 
 Configuration thresholds from `configs/default.yaml`:
-
+ 
 | Check | Threshold | Observed |
 |-------|-----------|----------|
-| Consecutive points | ≥{config['persistence']['min_consecutive_points']} | ✗ Not met |
-| Fraction of window | ≥{config['persistence']['min_fraction_of_window']:.0%} | ✗ Not met |
-| Z-score threshold | >{config['deviation']['zscore_threshold']}σ | ✓ Met (triggered detection) |
-
-While thousands of points exceeded the z-score threshold, **none persisted for {config['persistence']['min_consecutive_points']}+ consecutive points** — they returned to baseline before confirmation.
-
+| Consecutive points | ≥{min_consecutive} | ✗ Not met |
+| Fraction of window | ≥{min_fraction:.0%} | ✗ Not met |
+| Z-score threshold | >{z_threshold}σ | ✓ Met (triggered detection) |
+ 
+While thousands of points exceeded the z-score threshold, **none persisted for {min_consecutive}+ consecutive points** — they returned to baseline before confirmation.
+ 
 ### 2. State Machine Behavior
-
+ 
 ```
 NORMAL ──────┬──▶ UNSTABLE ──────┬──▶ NORMAL (spike rejected)
              │                   │
         Deviation           Return to
         detected            baseline
-        (|z| > {config['deviation']['zscore_threshold']}σ)          (< {config['persistence']['min_consecutive_points']} points)
+        (|z| > {z_threshold}σ)          (< {min_consecutive} points)
 ```
 
 Every transition followed the pattern:
@@ -145,7 +158,7 @@ The high number of UNSTABLE entries ({total_spikes:,} total) indicates:
 **Recommendation**: 
 - **No alert** — Machine is operating normally
 - **Monitor trend** — If spike frequency increases significantly, investigate
-- **Consider tuning** — The high detection count suggests the z-score threshold ({config['deviation']['zscore_threshold']}σ) may be too sensitive for this workload.
+- **Consider tuning** — The high detection count suggests the z-score threshold ({z_threshold}σ) may be too sensitive for this workload.
 """
         risk_table = """| Risk | Level | Notes |
 |------|-------|-------|
@@ -169,7 +182,8 @@ The high number of UNSTABLE entries ({total_spikes:,} total) indicates:
 
 **Analysis Date**: {date_str}  
 **System**: BLACKICE Regime Detection v1.0  
-**Configuration**: `configs/default.yaml`
+**Configuration**: `Learned Parameters (Hybrid ML)`
+
 
 ---
 
@@ -227,7 +241,7 @@ The high number of UNSTABLE entries ({total_spikes:,} total) indicates:
 ### Pattern Analysis
 
 The 100% rejection rate indicates:
-- All instabilities were **transient** (duration < {config['persistence']['min_consecutive_points']} points)
+- All instabilities were **transient** (duration < {min_consecutive} points)
 - The system exhibits **bursty behavior** but maintains baseline
 - **No memory leaks, saturation, or workload shifts** detected
 
@@ -302,15 +316,15 @@ Machine {machine_id} exhibits characteristics of a **high-variance but stable wo
 ```yaml
 # configs/default.yaml
 baseline:
-  window_size: {config['baseline']['window_size']}
-  use_ewma: {str(config['baseline'].get('use_ewma', False)).lower()}
+  window_size: {get_cfg('baseline', 'window_size', 60)}
+  use_ewma: {str(get_cfg('baseline', 'use_ewma', False)).lower()}
 
 deviation:
-  zscore_threshold: {config['deviation']['zscore_threshold']}
+  zscore_threshold: {z_threshold}
 
 persistence:
-  min_consecutive_points: {config['persistence']['min_consecutive_points']}
-  min_fraction_of_window: {config['persistence']['min_fraction_of_window']}
+  min_consecutive_points: {min_consecutive}
+  min_fraction_of_window: {min_fraction}
 ```
 
 ---

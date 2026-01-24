@@ -1,0 +1,8 @@
+ewma_alpha: 0.3
+min_consecutive_points: 3
+min_fraction_of_window: 0.3
+track_cpu: true
+track_memory: true
+use_ewma: false
+window_size: 10
+zscore_threshold: 2.5

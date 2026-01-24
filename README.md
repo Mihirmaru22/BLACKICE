@@ -100,36 +100,7 @@ The system avoids "AI magic" in favor of deterministic, explainable signal proce
 
 BLACKICE is engineered as a streaming processing pipeline, not a batch analysis script. It operates in O(1) memory per metric tracker.
 
-```mermaid
-%%{init: {'themeVariables': { 'fontSize': '13px'}}}%%
-graph LR
-  %% 1. Define Subgraphs
-  subgraph Control["Control Plane"]
-    PF[Persistence Filter]
-    SM[State Machine]
-    IR[Incident Report]
-  end
-
-  subgraph Data["Data Plane"]
-    SS[Stream Source]
-    IP[Ingest Pipeline]
-    DD[Deviation Detect]
-  end
-
-  %% 2. Data Plane Flow
-  SS --> IP
-  IP -->|Stats| DD
-
-  %% 3. Cross-Layer Signal
-  DD -.->|Signal| PF
-
-  %% 4. Control Plane Flow
-  PF -->|Confirmed| SM
-  SM -->|Alert| IR
-
-  %% 5. Feedback Loop
-  SM -->|Mute| DD
-```
+![Architecture Overview](https://raw.githubusercontent.com/Mihirmaru22/BLACKICE/main/assets/architecture.png)
 
 ### Components
 - **Baseline Modeling**: Welford's algorithm for numerically stable, streaming mean/variance without history retention.
@@ -222,8 +193,14 @@ A "Health" verdict often accompanies high instability counts. This is **correct 
 
 ## 9. License
 
-MIT License.
+[MIT License](LICENSE).
 
 ---
 
 > **For Contributors**: To setup a development environment and run tests, please see [DEVELOPMENT.md](DEVELOPMENT.md).
+
+---
+
+## 10. Author
+
+Created by **Mihir Maru**.

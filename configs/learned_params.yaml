@@ -1,0 +1,10 @@
+baseline:
+  window_size: 120    # Learned: Longer window for stability
+  use_ewma: true      # Learned: EWMA is better for this noise profile
+
+deviation:
+  zscore_threshold: 3.5  # Learned: Higher threshold to reduce false positives
+
+persistence:
+  min_consecutive_points: 5  # Learned: Stricter persistence
+  min_fraction_of_window: 0.5
